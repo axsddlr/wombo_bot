@@ -1,3 +1,4 @@
+from enum import Enum
 from json import dumps
 
 import discord
@@ -5,10 +6,33 @@ import requests
 from discord import app_commands
 from discord.ext import commands
 
-import utils.reference as ref
+
+class Styles(Enum):
+    synthwave = 1
+    ukiyoe = 2
+    nostyle = 3
+    steampunk = 4
+    fantasyart = 5
+    vibrant = 6
+    hd = 7
+    pastel = 8
+    psychic = 9
+    darkfantasy = 10
+    mystical = 11
+    festive = 12
+    baroque = 13
+    etching = 14
+    sdali = 15
+    wuhtercuhler = 16
+    provenance = 17
+    rosegold = 18
+    moonwalker = 19
+    blacklight = 20
+    psychedelic = 21
+    ghibil = 22
 
 
-async def generate(prompt: str, style: str):
+async def generate(prompt: str, style):
     with requests.Session() as session:
         r = session.post(
             "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDCvp5MTJLUdtBYEKYWXJrlLzu1zuKM6Xw",
@@ -27,7 +51,7 @@ async def generate(prompt: str, style: str):
         query = {"input_spec": {
             "display_freq": 10,
             "prompt": prompt,
-            "style": ref.styles[str(style)]  # refers to python file that maps int to string
+            "style": style.value  # refers to python file that maps int to string
         }}
         r = session.put("https://app.wombo.art/api/tasks/" + task_id, json=dumps(query), headers=auth_headers)
         data = r.json()
@@ -53,10 +77,13 @@ class Wombo(commands.Cog):
         self.bot = bot
 
     @app_commands.command(description='generate AI art from https://app.wombo.art')
+    @app_commands.describe(prompt="insert word or phrase that art will be based on", style='What style do you want to '
+                                                                                           'generate a Wombo Dream '
+                                                                                           'from?')
     # @app_commands.guilds(discord.Object(id=<guild id>)) If you want to define specific guilds (Currently,
     # this is global)
     @app_commands.guilds()
-    async def art(self, ctx: discord.Interaction,  prompt: str, style: str):
+    async def art(self, ctx: discord.Interaction, prompt: str, style: Styles):
         """generate AI art from https://app.wombo.art"""
         await ctx.response.defer()  # wait for followup message
         c = await generate(prompt, style)
