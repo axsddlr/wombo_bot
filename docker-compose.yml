@@ -3,8 +3,6 @@ version: "2.1"
 services:
   bot:
     container_name: "wombo_bot"
-    volumes:
-      - /path/to/data:/wombo_bot
     build: .
     env_file:
       - .env

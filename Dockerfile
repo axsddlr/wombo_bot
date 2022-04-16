@@ -1,29 +1,18 @@
-FROM python:3.8.12-slim-buster
+FROM python:3.8-alpine
 LABEL maintainer="Andre Saddler <contact@rehkloos.com>"
 
-# Download latest listing of available packages:
-RUN apt-get -y update
-# Upgrade already installed packages:
-RUN apt-get -y upgrade
+LABEL build_date="2021-05-23"
+RUN apk update && apk upgrade
+RUN apk add --no-cache git make build-base linux-headers
+RUN pip install virtualenv
 
-RUN apt-get -y install ffmpeg git
-
-WORKDIR /wombot_art
-
-RUN pip3 install --upgrade pip
-RUN pip3 install virtualenv
-
-COPY requirements.txt /wombo_art/requirements.txt
-
-
+WORKDIR /wombo_bot
 ENV VIRTUAL_ENV=/opt/venv
 RUN python -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-
-RUN pip3 install --upgrade pip
-RUN pip3 install --no-cache-dir -r requirements.txt
-
 COPY . .
+RUN pip install --upgrade pip
+RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["python3", "bot.py"]
+CMD ["python", "bot.py"]
