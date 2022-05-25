@@ -13,7 +13,7 @@ from utils.generator import gen_image
 class Styles(Enum):
     synthwave = 1
     ukiyoe = 2
-    no_style = 3
+    # no_style = 3
     steampunk = 4
     fantasy_art = 5
     vibrant = 6
