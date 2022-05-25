@@ -30,13 +30,18 @@ async def gen_image(prompt: str, style):
     while True:
         r = session.get("https://app.wombo.art/api/tasks/" + task_id, headers=auth_headers)
         data = r.json()
-        state = data["state"]
+        if "state" in data:
+            state = data["state"]
 
-        if state == "completed":
-            break
-        if state == "failed":
-            print(data)
-            raise RuntimeError(data)
+            if state == "completed":
+                break
+            if state == "failed":
+                print(data)
+
+                raise RuntimeError(data)
+
+        if not ("state" in data):
+            return
 
     finishedImage_url = data["photo_url_list"][-1]
     return finishedImage_url
