@@ -33,6 +33,10 @@ class Styles(Enum):
     blacklight = 20
     psychedelic = 21
     ghibil = 22
+    surreal = 23
+    love = 24
+    death = 25
+    robots = 26
 
 
 class Wombo(commands.Cog):
