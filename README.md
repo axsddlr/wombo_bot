@@ -1,5 +1,7 @@
 # Wombo Art Discord Bot
 
+[![wombo_stable](https://github.com/axsddlr/wombo_bot/actions/workflows/docker.yml/badge.svg?branch=master)](https://github.com/axsddlr/wombo_bot/actions/workflows/docker.yml)
+
 ####Simple discord bot for wombo art ai using discord.py 2.0 alpha
 
 Installing
