@@ -1,11 +1,14 @@
 import os
+import ujson as json
 
 import discord
 from discord.ext import commands
-from dotenv import load_dotenv
 
-load_dotenv()
-TOKEN = os.getenv("DISCORD_TOKEN")
+with open('./config.json') as f:
+    data = json.load(f)
+    TOKEN = data["DISCORD_TOKEN"]
+    DISCORD_ID = data["DISCORD_ID"]
+
 
 
 class Bot(commands.Bot):
@@ -14,9 +17,9 @@ class Bot(commands.Bot):
 
     async def startup(self):
         await bot.wait_until_ready()
-        # await bot.tree.sync(guild=discord.Object(id=<guild id>))  # If you want to define specific guilds,
+        await bot.tree.sync(guild=discord.Object(DISCORD_ID))  # If you want to define specific guilds,
         # pass a discord object with id (Currently, this is global)
-        await bot.tree.sync()
+        # await bot.tree.sync()
         await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="/art"))
         print('Sucessfully synced applications commands')
         print(f'Connected as {bot.user}')

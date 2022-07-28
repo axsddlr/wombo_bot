@@ -1,8 +1,13 @@
-version: "2.1"
+---
+version: '3'
 
 services:
-  bot:
+  wombo:
     container_name: "wombo_bot"
-    build: .
-    env_file:
-      - .env
+    image: "ghcr.io/axsddlr/wombo_bot:latest"
+    restart: unless-stopped
+    # choose time zone for bot
+    environment:
+      - TZ=America/New_York
+    volumes:
+      - ./r_hls/config.json:/hls_bot/config.json

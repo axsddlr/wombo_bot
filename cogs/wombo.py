@@ -4,6 +4,7 @@ from enum import Enum
 
 import discord
 import requests
+import ujson as json
 from discord import app_commands
 from discord.ext import commands
 
@@ -13,7 +14,6 @@ from utils.generator import gen_image
 class Styles(Enum):
     synthwave = 1
     ukiyoe = 2
-    # no_style = 3
     steampunk = 4
     fantasy_art = 5
     vibrant = 6
@@ -34,9 +34,14 @@ class Styles(Enum):
     psychedelic = 21
     ghibil = 22
     surreal = 23
-    love = 24
-    death = 25
-    robots = 26
+    no_style = 3
+    radioactive = 27
+    arcane = 34
+
+
+with open('./config.json') as f:
+    data = json.load(f)
+    DISCORD_ID = data["DISCORD_ID"]
 
 
 class Wombo(commands.Cog):
@@ -48,9 +53,9 @@ class Wombo(commands.Cog):
     @app_commands.describe(prompt="insert word or phrase that art will be based on", style='What style do you want to '
                                                                                            'generate a Wombo Dream '
                                                                                            'from?')
-    # @app_commands.guilds(discord.Object(id=<guild id>)) If you want to define specific guilds (Currently,
+    @app_commands.guilds(discord.Object(id=DISCORD_ID))  # If you want to define specific guilds (Currently,
     # this is global)
-    @app_commands.guilds()
+    # @app_commands.guilds()
     async def art(self, ctx: discord.Interaction, prompt: str, style: Styles):
         """generate AI art from https://app.wombo.art"""
         await ctx.response.defer()  # wait for followup message

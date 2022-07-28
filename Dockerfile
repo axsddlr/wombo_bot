@@ -1,18 +1,18 @@
-FROM python:3.8-alpine
-LABEL maintainer="Andre Saddler <contact@rehkloos.com>"
+FROM python:3.9.5-slim-buster AS build
 
-LABEL build_date="2021-05-23"
-RUN apk update && apk upgrade
-RUN apk add --no-cache git make build-base linux-headers
-RUN pip install virtualenv
+RUN mkdir -p /wombo_bot
 
 WORKDIR /wombo_bot
-ENV VIRTUAL_ENV=/opt/venv
-RUN python -m venv $VIRTUAL_ENV
-ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends git gcc build-essential python-dev -y
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir  -r requirements.txt
+
+FROM python:3.9.5-slim-buster AS final
+WORKDIR /wombo_bot
+COPY --from=build /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
 COPY . .
-RUN pip install --upgrade pip
-RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["python", "bot.py"]
+CMD ["python3", "bot.py"]
