@@ -1,37 +1,107 @@
-from json import dumps
-
 import requests
 
 
 async def gen_image(prompt: str, style):
+    """
+    It gets the token, gets the ID of the task, creates the task, and
+    checks if the image is done.
+
+    :param prompt: The text that will be written on the image
+    :type prompt: str
+    :param style: The style of the image
+    :return: The URL of the image.
+    """
     with requests.Session() as session:
 
-        data = "grant_type=refresh_token&refresh_token=eyJhbGciOiJSUzI1NiIsImtpZCI6IjFhZjYwYzE3ZTJkNmY4YWQ1MzRjNDAwYzVhMTZkNjc2ZmFkNzc3ZTYiLCJ0eXAiOiJKV1QifQ.eyJuYW1lIjoiNml4MHMiLCJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vcGFpbnQtcHJvZCIsImF1ZCI6InBhaW50LXByb2QiLCJhdXRoX3RpbWUiOjE2NTAwMDY4ODcsInVzZXJfaWQiOiJwRVY0ZFBZS2haWGo0VzFBMGRmcGtJM055eGYxIiwic3ViIjoicEVWNGRQWUtoWlhqNFcxQTBkZnBrSTNOeXhmMSIsImlhdCI6MTY1OTA2NzY2MiwiZXhwIjoxNjU5MDcxMjYyLCJlbWFpbCI6ImF4c2RsckBpY2xvdWQuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiYXBwbGUuY29tIjpbIjAwMTcwMC5hMTI2OWMwOTRlNzA0ZmY1OTRlOTUxZmQzMWU4NDRmNS4wNzAwIl0sImVtYWlsIjpbImF4c2RsckBpY2xvdWQuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoiYXBwbGUuY29tIn19.H8rKg9P4yAsoHvQWolhM4oHcj5L7SUak7PDzDsVctKO2FDXk57ohYguST_SaN8lg-9BmHBDE2bzkmWyBvvAew0YsDIfMUjDsKM4nWACDxnOZltzPRyJGi3Xapc8h0eWKnJtNCYYgrrcT8R0Vv8NKkzaLSRhiNQzCX_DBqvBuL9Ai3n8UHZ14-qFPljufFiBzb-GVMLIO3BFhUENNRM3EtslUJoxpCmhIdHTkW2OLpQoqQsafqXJYbdqUjkNYOEBTjEHrxh9T1_jiCAKX2OjNjYriu9EIgoROX7Teuncc3rUA29WJVmEqgwv_9lPYIAnFPLddux0IwdCli92ZCcTz9A"
+        # Getting the token for the user.
+        get_token = requests.post(
+            "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDCvp5MTJLUdtBYEKYWXJrlLzu1zuKM6Xw",
+            headers={
+                "User-Agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, "
+                              "like Gecko) Chrome/103.0.0.0 Mobile Safari/537.36",
+                "Accept": "*/*",
+                "Accept-Language": "fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3",
+                "Accept-Encoding": "gzip, deflate, br",
+                "content-type": "application/json",
+                "x-client-version": "Firefox/JsCore/9.1.2/FirebaseCore-web",
+                "Origin": "https://app.wombo.art",
+                "DNT": "1",
+                "Connection": "keep-alive",
+                "Sec-Fetch-Dest": "empty",
+                "Sec-Fetch-Mode": "cors",
+                "Sec-Fetch-Site": "cross-site",
+                "TE": "trailers"
+            }, json={
+                "returnSecureToken": "true"
+            }).json()
+        id_token = get_token["idToken"]
 
-        r = session.post(
-            "https://securetoken.googleapis.com/v1/token?key=AIzaSyDCvp5MTJLUdtBYEKYWXJrlLzu1zuKM6Xw", data=data,
-            headers={"Content-Type": "application/x-www-form-urlencoded"})
-        data = r.json()
-        token = data["id_token"]
-        auth_headers = {"Authorization": "bearer " + token}
+        # It's getting the ID of the task.
+        get_id = requests.post("https://paint.api.wombo.ai/api/tasks", headers={
+            "User-Agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, "
+                          "like Gecko) Chrome/103.0.0.0 Mobile Safari/537.36",
+            "Accept": "*/*",
+            "Accept-Language": "fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Referer": "https://app.wombo.art/",
+            "Authorization": f"bearer {id_token}",
+            "Content-Type": "text/plain;charset=UTF-8",
+            "Origin": "https://app.wombo.art",
+            "Connection": "keep-alive",
+            "Sec-Fetch-Dest": "empty",
+            "Sec-Fetch-Mode": "cors",
+            "Sec-Fetch-Site": "same-origin",
+            "TE": "trailers"
+        }, json={
+            "premium": False
+        }).json()
 
-        # retrieve task id
-        r = session.post("https://paint.api.wombo.ai/api/tasks", headers=auth_headers, json=dumps({"premium": False}))
-        data = r.json()
+        task_id = get_id["id"]
 
-        task_id = data["id"]
+        # It's creating the task.
+        initCreateTask = requests.put(f"https://paint.api.wombo.ai/api/tasks/{task_id}", headers={
+            "User-Agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, "
+                          "like Gecko) Chrome/103.0.0.0 Mobile Safari/537.36",
+            "Accept": "*/*",
+            "Accept-Language": "fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Referer": "https://app.wombo.art/",
+            "Authorization": f"bearer {id_token}",
+            "Content-Type": "text/plain;charset=UTF-8",
+            "Origin": "https://app.wombo.art",
+            "DNT": "1",
+            "Connection": "keep-alive",
+            "Cookie": "_ga_BRH9PT4RKM=GS1.1.1644347760.1.0.1644347820.0; _ga=GA1.1.1610806426.1644347761",
+            "Sec-Fetch-Dest": "empty",
+            "Sec-Fetch-Mode": "cors",
+            "Sec-Fetch-Site": "same-origin",
+            "TE": "trailers"
+        }, json={
+            "input_spec": {
+                "prompt": prompt,
+                "style": style.value,
+                "display_freq": 10
+            }
+        })
 
-        # Start the task
-        query = {"input_spec": {
-            "display_freq": 10,
-            "prompt": prompt,
-            "style": style.value
-        }}
-        r = session.put("https://app.wombo.art/api/tasks/" + task_id, json=dumps(query), headers=auth_headers)
-        data = r.json()
-
+    # It's checking if the image is done.
     while True:
-        r = session.get("https://app.wombo.art/api/tasks/" + task_id, headers=auth_headers)
+        r = session.get(f"https://paint.api.wombo.ai/api/tasks/{task_id}", headers={
+            "User-Agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, "
+                          "like Gecko) Chrome/103.0.0.0 Mobile Safari/537.36",
+            "Accept": "*/*",
+            "Accept-Language": "fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Referer": "https://app.wombo.art/",
+            "Authorization": f"bearer {id_token}",
+            "DNT": "1",
+            "Connection": "keep-alive",
+            "Cookie": "_ga_BRH9PT4RKM=GS1.1.1644347760.1.0.1644347820.0; _ga=GA1.1.1610806426.1644347761",
+            "Sec-Fetch-Dest": "empty",
+            "Sec-Fetch-Mode": "cors",
+            "Sec-Fetch-Site": "same-origin",
+            "TE": "trailers"
+        })
         data = r.json()
         if "state" in data:
             state = data["state"]
@@ -46,5 +116,5 @@ async def gen_image(prompt: str, style):
         if not ("state" in data):
             return
 
-    finishedImage_url = data["photo_url_list"][-1]
+    finishedImage_url = data["result"]["final"]
     return finishedImage_url
