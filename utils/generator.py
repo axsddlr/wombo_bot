@@ -6,7 +6,7 @@ import requests
 async def gen_image(prompt: str, style):
     with requests.Session() as session:
 
-        data = "grant_type=refresh_token&refresh_token=AIwUaOmMdukSqJZSdchKpoLStrStqB7a1Uj9KfIDy8Z-mYnZPqXJlXRhZWy7SaOJPA2fKWX69oa04YqMLzVtXMnEvU_BYdxzij40PJke1wA8hGoo6OkWXgMpC-v5kT9M-q-B6Zwm4u61kzsubCyophH-nhOmKoeI6iUa1OnjOMrNouaVKVnfBOM"
+        data = "grant_type=refresh_token&refresh_token=eyJhbGciOiJSUzI1NiIsImtpZCI6IjFhZjYwYzE3ZTJkNmY4YWQ1MzRjNDAwYzVhMTZkNjc2ZmFkNzc3ZTYiLCJ0eXAiOiJKV1QifQ.eyJuYW1lIjoiNml4MHMiLCJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vcGFpbnQtcHJvZCIsImF1ZCI6InBhaW50LXByb2QiLCJhdXRoX3RpbWUiOjE2NTAwMDY4ODcsInVzZXJfaWQiOiJwRVY0ZFBZS2haWGo0VzFBMGRmcGtJM055eGYxIiwic3ViIjoicEVWNGRQWUtoWlhqNFcxQTBkZnBrSTNOeXhmMSIsImlhdCI6MTY1OTA2NzY2MiwiZXhwIjoxNjU5MDcxMjYyLCJlbWFpbCI6ImF4c2RsckBpY2xvdWQuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiYXBwbGUuY29tIjpbIjAwMTcwMC5hMTI2OWMwOTRlNzA0ZmY1OTRlOTUxZmQzMWU4NDRmNS4wNzAwIl0sImVtYWlsIjpbImF4c2RsckBpY2xvdWQuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoiYXBwbGUuY29tIn19.H8rKg9P4yAsoHvQWolhM4oHcj5L7SUak7PDzDsVctKO2FDXk57ohYguST_SaN8lg-9BmHBDE2bzkmWyBvvAew0YsDIfMUjDsKM4nWACDxnOZltzPRyJGi3Xapc8h0eWKnJtNCYYgrrcT8R0Vv8NKkzaLSRhiNQzCX_DBqvBuL9Ai3n8UHZ14-qFPljufFiBzb-GVMLIO3BFhUENNRM3EtslUJoxpCmhIdHTkW2OLpQoqQsafqXJYbdqUjkNYOEBTjEHrxh9T1_jiCAKX2OjNjYriu9EIgoROX7Teuncc3rUA29WJVmEqgwv_9lPYIAnFPLddux0IwdCli92ZCcTz9A"
 
         r = session.post(
             "https://securetoken.googleapis.com/v1/token?key=AIzaSyDCvp5MTJLUdtBYEKYWXJrlLzu1zuKM6Xw", data=data,
@@ -16,7 +16,7 @@ async def gen_image(prompt: str, style):
         auth_headers = {"Authorization": "bearer " + token}
 
         # retrieve task id
-        r = session.post("https://app.wombo.art/api/tasks", headers=auth_headers, json=dumps({"premium": False}))
+        r = session.post("https://paint.api.wombo.ai/api/tasks", headers=auth_headers, json=dumps({"premium": False}))
         data = r.json()
 
         task_id = data["id"]
